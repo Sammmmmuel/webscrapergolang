@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"io/ioutil"
+	// "os"
 	"strconv"
 
 	"github.com/gocolly/colly"
@@ -22,7 +24,7 @@ func main() {
 	)
 
 	collector.OnHTML(".factsList li", func(element *colly.HTMLElement){
-		factID, err := strconv.Atoi(elemnt.Attr("id"))
+		factId, err := strconv.Atoi(element.Attr("id"))
 		if err != nil {
 			log.Println("couldnt get id")
 		}
@@ -42,4 +44,16 @@ func main() {
 	})
 
 	collector.Visit("https://www.factretriever.com/area-51-facts")
+
+	writeJSON(allFacts)
+}
+
+func writeJSON(data []Fact) {
+	file, err := json.MarshalIndent(data,""," ")
+	if err != nil {
+		log.Println("cant create json file")
+		return
+	}
+
+	_ = ioutil.WriteFile("Area51facts.json", file, 0644)
 }
